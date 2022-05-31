@@ -76,8 +76,8 @@ class OgUiController extends ControllerBase {
    */
   public function rolesPermissionsOverviewPage($type) {
     $route = $type === 'roles' ? 'entity.og_role.collection' : 'og_ui.permissions_overview';
-    $action = $type === 'roles' ? t('Edit roles') : t('Edit permissions');
-    $header = [t('Group type'), t('Operations')];
+    $action = $type === 'roles' ? $this->t('Edit roles') : $this->t('Edit permissions');
+    $header = [$this->t('Group type'), $this->t('Operations')];
     $rows = [];
     $build = [];
 
@@ -95,6 +95,7 @@ class OgUiController extends ControllerBase {
         $this->getLogger('og')->error('Error: the %entity_type entity type is not defined but is supposed to have group bundles.', ['%entity_type' => $entity_type]);
         continue;
       }
+
       $bundle_info = $this->entityTypeBundleInfo->getBundleInfo($entity_type);
       foreach ($bundles as $bundle) {
         $rows[] = [

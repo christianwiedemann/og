@@ -149,7 +149,7 @@ class OgEventSubscriber implements EventSubscriberInterface {
       new GroupPermission([
         'name' => 'manage members',
         'title' => $this->t('Manage members'),
-        'description' => $this->t('Users may remove group members and alter member status and roles.'),
+        'description' => $this->t('Users may add and remove group members, and alter member status and roles.'),
         'default roles' => [OgRoleInterface::ADMINISTRATOR],
         'restrict access' => TRUE,
       ]),
@@ -280,7 +280,7 @@ class OgEventSubscriber implements EventSubscriberInterface {
 
     foreach ($group_content_bundle_ids as $group_content_entity_type_id => $bundle_ids) {
       foreach ($bundle_ids as $bundle_id) {
-        $permissions += $this->generateEntityOperationPermissionList($group_content_entity_type_id, $bundle_id);
+        $permissions = array_merge($permissions, $this->generateEntityOperationPermissionList($group_content_entity_type_id, $bundle_id));
       }
     }
 
@@ -372,9 +372,21 @@ class OgEventSubscriber implements EventSubscriberInterface {
       'description' => 'Manage members',
       'path' => 'members',
       'requirements' => [
-        '_og_user_access_group' => OgAccess::ADMINISTER_GROUP_PERMISSION,
+        '_og_user_access_group' => implode('|', [
+          OgAccess::ADMINISTER_GROUP_PERMISSION,
+          'manage members',
+        ]),
         // Views module must be enabled.
         '_module_dependencies' => 'views',
+      ],
+    ];
+
+    $routes_info['add_membership_page'] = [
+      'controller' => '\Drupal\og\Controller\OgAdminMembersController::addPage',
+      'title' => 'Add a member',
+      'path' => 'members/add',
+      'requirements' => [
+        '_og_membership_add_access' => 'TRUE',
       ],
     ];
 
